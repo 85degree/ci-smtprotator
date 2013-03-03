@@ -15,7 +15,7 @@
  * Codeigniter Library for use to send email from
  * multiple SMTP account. Each message use only one
  * SMTP account.
- * 
+ *
  * @property SMTPRotator $apungmailer
  */
 class SMTPRotator
@@ -62,6 +62,7 @@ class SMTPRotator
      * @return void
      */
     public function addServer($config){
+        // TODO: addserver is not adding if added
         if(isset($config['host'])) {
             $this->host = $config['host'];
         } else {
@@ -92,6 +93,22 @@ class SMTPRotator
         $ci->db->order_by('count');
         $query = $ci->db->get($this->tablename);
         return $query->row_array();
+    }
+
+    /**
+     * SMTPRotator::end
+     *
+     * End smtprotator
+     */
+    protected function end($chosen_smtpid){
+        $ci = &get_instance();
+        $ci->load->database();
+        $last = $ci->select('count')->where('smtpid',$chosen_smtpid)->get($this->tablename)->row_array();
+        $set = array(
+            'count' => $last['count']
+        );
+        $ci->db->where("smtpid",$chosen_smtpid);
+        $ci->db->update($this->tablename,$set);
     }
 
     /**
